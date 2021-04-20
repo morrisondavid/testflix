@@ -25,3 +25,21 @@
 .green-bg {
   background-color: #049452;
 }
+
+@media screen and (max-width: 1023px) {
+  .home-page__grid {
+    grid-template-columns: repeat(3, 200px);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .home-page__grid {
+    grid-template-columns: repeat(2, 200px);
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .home-page__grid {
+    grid-template-columns: 200px;
+  }
+}
