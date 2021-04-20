@@ -1,14 +1,18 @@
 import React from 'react';
-import App from './_app';
 import { render } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import Home from '.';
 
 expect.extend(toHaveNoViolations);
 
+const movieActions = {
+  getAllMovies: () => null,
+  updateMovieState: (id: string, saved: boolean, watched: boolean) => null,
+};
+
 describe('<Home/>', () => {
   it('has no accessibility violations', async () => {
-    const { container } = render(<Home />);
+    const { container } = render(<Home movieActions={movieActions} />);
     const results = await axe(container);
 
     expect(results).toHaveNoViolations();
@@ -17,7 +21,7 @@ describe('<Home/>', () => {
 
 describe('/', () => {
   it('should render the homepage', () => {
-    const { container } = render(<Home />);
+    const { container } = render(<Home movieActions={movieActions} />);
     expect(container).toMatchInlineSnapshot(`
       <div>
         <main

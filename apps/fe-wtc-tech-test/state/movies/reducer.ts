@@ -5,7 +5,7 @@ import {
   ReduceMovieRatings,
   IMovieRating,
   ReduceMovie,
-  ValidRatings,
+  IUpdateMovieData,
 } from './types';
 import initialState from './initialState';
 import { createReducer, required } from '../../utils';
@@ -45,7 +45,7 @@ export const getMovieRating: ReduceMovieRatings = (
     rating = 5;
   }
 
-  return rating.toFixed(2);
+  return +rating.toFixed(2);
 };
 
 export const toMovieCard: ReduceMovie = ({
@@ -80,6 +80,22 @@ const updateMoviesList = (state: IMoviesContext, action: IAction<IMovie[]>) => {
   });
 };
 
+const updateMovie = (
+  state: IMoviesContext,
+  action: IAction<IUpdateMovieData>
+) => {
+  required(state, 'state');
+  required(action, 'action');
+
+  return produce(state, (draft) => {
+    const { imdbID, saved, watched } = action.data;
+    draft.moviesById[imdbID].Saved = saved;
+    draft.movies.find((m) => m.imdbID === imdbID).Saved = saved;
+    draft.moviesById[imdbID].Watched = watched;
+    draft.movies.find((m) => m.imdbID === imdbID).Watched = watched;
+  });
+};
+
 const registerError = (state: IMoviesContext, action: IAction<IError>) => {
   required(state, 'state');
   required(action, 'action');
@@ -90,6 +106,7 @@ const registerError = (state: IMoviesContext, action: IAction<IError>) => {
 };
 
 export default createReducer<IMoviesContext>(initialState, {
-  [ActionTypes.UPDATE_MOVIES]: updateMoviesList,
+  [ActionTypes.UPDATE_MOVIES_LIST]: updateMoviesList,
   [ActionTypes.ERROR]: registerError,
+  [ActionTypes.UPDATE_MOVIE]: updateMovie,
 });

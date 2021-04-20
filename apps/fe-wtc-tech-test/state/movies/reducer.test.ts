@@ -1,7 +1,24 @@
 import { IAction } from '../types';
 import { moviesReducer, ActionTypes, initialState } from './index';
 import { getMovieRating, toMovieCard } from './reducer';
-import { IError, IMovie, IMovieCard, IMovieRating } from './types';
+import {
+  IError,
+  IMovie,
+  IMovieCard,
+  IMovieRating,
+  IMoviesContext,
+  IUpdateMovieData,
+} from './types';
+
+const mockMovieCard: () => IMovieCard = () => ({
+  imdbID: 'tt0083658',
+  Title: 'Blade Runner',
+  Poster:
+    'https://m.media-amazon.com/images/M/MV5BNzQzMzJhZTEtOWM4NS00MTdhLTg0YjgtMjM4MDRkZjUwZDBlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
+  Rating: 4.25,
+  Saved: 'True',
+  Watched: 'False',
+});
 
 const mockMovie: () => IMovie = () => ({
   Title: 'Blade Runner',
@@ -40,13 +57,13 @@ const mockMovie: () => IMovie = () => ({
 });
 
 describe('MoviesReducer', () => {
-  describe(`${ActionTypes.UPDATE_MOVIES}`, () => {
+  describe(`${ActionTypes.UPDATE_MOVIES_LIST}`, () => {
     it('updates state correctly', () => {
       const data = [mockMovie()];
 
       const state = { ...initialState };
       const action: IAction<IMovie[]> = {
-        type: ActionTypes.UPDATE_MOVIES,
+        type: ActionTypes.UPDATE_MOVIES_LIST,
         data,
       };
 
@@ -67,7 +84,7 @@ describe('MoviesReducer', () => {
       const data = [mockMovie()];
       const state = { ...initialState };
       const action: IAction<IMovie[]> = {
-        type: ActionTypes.UPDATE_MOVIES,
+        type: ActionTypes.UPDATE_MOVIES_LIST,
         data,
       };
 
@@ -88,37 +105,72 @@ describe('MoviesReducer', () => {
     });
   });
 
-  describe(`${ActionTypes.ERROR}`, () => {
+  describe(`${ActionTypes.UPDATE_MOVIE}`, () => {
     it('updates state correctly', () => {
-      const data: IError = { message: 'test error', code: 404 };
+      const movieCard = mockMovieCard();
+      const data: IUpdateMovieData = {
+        imdbID: 'tt0083658',
+        saved: false,
+        watched: true,
+      };
 
-      const state = { ...initialState };
-      const action: IAction<IError> = {
-        type: ActionTypes.ERROR,
+      const state: IMoviesContext = {
+        movies: [movieCard, { ...mockMovieCard(), imdbID: 'tresfg' }],
+        moviesById: { tt0083658: movieCard },
+        error: null,
+      };
+
+      const action: IAction<IUpdateMovieData> = {
+        type: ActionTypes.UPDATE_MOVIE,
         data,
       };
 
       const newState = moviesReducer(state, action);
 
-      expect(newState).not.toBe(state);
-      expect(newState.error).toEqual(action.data);
+      //Reference to unchanged objects should stay the same
+      expect(newState.movies[1]).toBe(state.movies[1]);
+      expect(newState.moviesById['tt0083658'].Saved).toEqual(data.saved);
+      expect(newState.moviesById['tt0083658'].Watched).toEqual(data.watched);
+      expect(
+        newState.movies.find((m) => m.imdbID === 'tt0083658').Saved
+      ).toEqual(data.saved);
+      expect(
+        newState.movies.find((m) => m.imdbID === 'tt0083658').Watched
+      ).toEqual(data.watched);
     });
 
-    it('new state is immutable', () => {
-      const data: IError = { message: 'test error', code: 404 };
-      const state = { ...initialState };
-      const action: IAction<IError> = {
-        type: ActionTypes.ERROR,
-        data,
-      };
+    describe(`${ActionTypes.ERROR}`, () => {
+      it('updates state correctly', () => {
+        const data: IError = { message: 'test error', code: 404 };
 
-      const newState = moviesReducer(state, action);
+        const state = { ...initialState };
+        const action: IAction<IError> = {
+          type: ActionTypes.ERROR,
+          data,
+        };
 
-      const mutateError = () => {
-        newState.error.message = 'new message';
-      };
+        const newState = moviesReducer(state, action);
 
-      expect(mutateError).toThrowError();
+        expect(newState).not.toBe(state);
+        expect(newState.error).toEqual(action.data);
+      });
+
+      it('new state is immutable', () => {
+        const data: IError = { message: 'test error', code: 404 };
+        const state = { ...initialState };
+        const action: IAction<IError> = {
+          type: ActionTypes.ERROR,
+          data,
+        };
+
+        const newState = moviesReducer(state, action);
+
+        const mutateError = () => {
+          newState.error.message = 'new message';
+        };
+
+        expect(mutateError).toThrowError();
+      });
     });
   });
 });

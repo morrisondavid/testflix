@@ -1,5 +1,21 @@
-const getFormattedRating = (rating: number) => {
-  let formattedRating = 0;
+export type ValidRatings =
+  | -1
+  | 0
+  | 0.5
+  | 1
+  | 1.5
+  | 2
+  | 2.5
+  | 3
+  | 3.5
+  | 4
+  | 4.5
+  | 5;
+
+const getFormattedRating: (rating: number) => ValidRatings = (
+  rating: number
+) => {
+  let formattedRating: ValidRatings = 0;
 
   if (rating >= 5) {
     formattedRating = 5;

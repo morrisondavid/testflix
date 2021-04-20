@@ -1,7 +1,6 @@
 import React from 'react';
-import { getFormattedRating, isRatingValid, logger } from '../../utils';
+import { getFormattedRating, logger } from '../../utils';
 import { ErrorMessages } from '../../constants';
-import { ValidRatings } from '../../state/movies/types';
 import {
   StarIcon,
   StarBorderIcon,

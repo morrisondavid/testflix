@@ -1,5 +1,4 @@
 import getFormattedRating from './getFormattedRating';
-import isRatingValid from './isRatingValid';
 import logger from './logger';
 import createReducer from './createReducer';
 import isFunction from './isFunction';
@@ -14,6 +13,5 @@ export {
   required,
   MissingParameterError,
   logger,
-  isRatingValid,
   getFormattedRating,
 };

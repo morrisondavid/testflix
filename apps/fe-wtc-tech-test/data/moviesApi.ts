@@ -19,7 +19,23 @@ async function makeRequest<T>(request: Promise<AxiosResponse<T>>) {
 
 class Api {
   getMovies = async () =>
-    await makeRequest<IMovie[]>(client.get(ApiEndpoints.MOVIES));
+    await makeRequest<IMovie[]>(client.get(ApiEndpoints.GET_MOVIES));
+
+  updateMovie = async (imdbID: string, saved: boolean, watched) => {
+    const url = `${ApiEndpoints.UPDATE_MOVIE}/${imdbID}`;
+
+    const data = new URLSearchParams();
+    data.append('saved', saved.toString());
+    data.append('watched', watched.toString());
+
+    const config = {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    };
+
+    return await makeRequest(client.put(url, data, config));
+  };
 }
 
 export default new Api();

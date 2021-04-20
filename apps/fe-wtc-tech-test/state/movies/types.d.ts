@@ -36,21 +36,6 @@ export interface IMovie {
   Watched: string;
   Saved: string;
 }
-
-export type ValidRatings =
-  | -1
-  | 0
-  | 0.5
-  | 1
-  | 1.5
-  | 2
-  | 2.5
-  | 3
-  | 3.5
-  | 4
-  | 4.5
-  | 5;
-
 export interface IMovieCard {
   Title: string;
   Poster: string;
@@ -63,12 +48,23 @@ export interface IMovieCard {
 export type ReduceMovie = (fullMovieDetails: IMovie) => IMovieCard;
 
 export type ReduceMovieRatings = (ratings: IMovieRating[]) => number;
+
+export interface IUpdateMovieData {
+  imdbID: string;
+  saved: boolean;
+  watched: boolean;
+}
 export interface IMoviesContext {
   movies: IMovieCard[];
   moviesById: { [key: string]: IMovieCard };
   error: IError;
 }
 
-export interface IMoviesActionCreatrors {
-  getAllMovies: IActionCreator;
+export interface IMoviesActionCreators {
+  getAllMovies: () => Promise<void>;
+  updateMovieState: (
+    id: string,
+    saved: boolean,
+    watched: boolean
+  ) => Promise<void>;
 }
