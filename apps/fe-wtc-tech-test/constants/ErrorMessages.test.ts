@@ -13,6 +13,9 @@ describe('ErrorMessages', () => {
       'The parameter is required'
     );
     testedValues++;
+
+    expect(ErrorMessages.INVALID_RATING).toEqual('Invalid movie rating');
+    testedValues++;
   });
 
   test('all values tested', () => {

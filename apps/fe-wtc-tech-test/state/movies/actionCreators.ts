@@ -1,14 +1,12 @@
+/* eslint-disable */
 import { ActionTypes } from '.';
-import { IMoviesActionCreatrors } from './types';
+import { IError, IMovie, IMoviesActionCreatrors } from './types';
 import moviesApi from '../../data/moviesApi';
-import { logger } from '../../utils';
 import { IAction } from '../types';
 
 class MoviesActionCreators implements IMoviesActionCreatrors {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private dispatch: (action: IAction<any>) => any;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(dispatch: (action: IAction<any>) => any) {
     this.dispatch = dispatch;
   }
@@ -16,13 +14,22 @@ class MoviesActionCreators implements IMoviesActionCreatrors {
   getAllMovies = async () => {
     const result = await moviesApi.getMovies();
 
+    const updateMoviesAction: IAction<IMovie[]> = {
+      type: ActionTypes.UPDATE_MOVIES,
+      data: result.value,
+    };
+
+    const errorAction: IAction<IError> = {
+      type: ActionTypes.ERROR,
+      data: { message: result.errors[0], code: result.code },
+    };
+
     result.success
-      ? this.dispatch({ type: ActionTypes.UPDATE_MOVIES, data: result.value })
-      : logger.error(result.errors[0]);
+      ? this.dispatch(updateMoviesAction)
+      : this.dispatch(errorAction);
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const useMoviesActionsCreators = (dispatch: (action: IAction<any>) => any) =>
   new MoviesActionCreators(dispatch);
 

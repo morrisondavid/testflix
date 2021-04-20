@@ -1,5 +1,9 @@
 {
   "cSpell.language": "en-US",
   "cSpell.words": ["API's", "nextjs"],
-  "eslint.workingDirectories": ["apps", "apps/fe-wtc-tech-test"]
+  "eslint.workingDirectories": [
+    "apps",
+    "apps/fe-wtc-tech-test",
+    "libs/ui/src/lib"
+  ]
 }

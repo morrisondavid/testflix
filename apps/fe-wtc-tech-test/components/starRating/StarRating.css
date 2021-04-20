@@ -1,0 +1,18 @@
+.rating-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px;
+}
+
+.rating-container span {
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.rating-container__stars {
+  display: flex;
+  justify-content: center;
+  width: 140px;
+  gap: 8px;
+}

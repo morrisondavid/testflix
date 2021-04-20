@@ -7,6 +7,8 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { moviesReducer, initialState, MoviesContext } from '../state/movies';
 import useMoviesActionCreators from '../state/movies/actionCreators';
+import ErrorHandler from '../components/errorHandler/ErrorHandler';
+import '../styles/styles.css';
 
 const { Instructions, Storybook, Design, Swagger } = LINKS;
 
@@ -38,7 +40,9 @@ const App = ({ Component, pageProps }) => {
         <Header />
         <div className={classes.contentContainer}>
           <MoviesContext.Provider value={state}>
-            <Component movieActions={movieActions} {...pageProps} />
+            <ErrorHandler>
+              <Component movieActions={movieActions} {...pageProps} />
+            </ErrorHandler>
           </MoviesContext.Provider>
         </div>
         <Footer links={[Instructions, Design, Swagger, Storybook]} />

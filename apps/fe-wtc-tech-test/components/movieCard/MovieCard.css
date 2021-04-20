@@ -1,0 +1,31 @@
+.movie-card {
+  width: 200px;
+  height: 300px;
+  box-shadow: 0px 2px 4px 1px lightgray;
+  border-radius: 20px;
+  margin: 0 auto;
+}
+
+.movie-card__ratings,
+.movie-card__img {
+  display: flex;
+  justify-content: center;
+}
+
+.movie-card__img img {
+  border-radius: 10px;
+  width: 150px;
+  height: 221px;
+}
+
+.movie-card__icons {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+}
+
+.movie-card__icons svg {
+  cursor: pointer;
+  height: 24px;
+  width: 24px;
+}

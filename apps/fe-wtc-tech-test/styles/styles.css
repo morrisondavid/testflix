@@ -1,0 +1,11 @@
+.home-page__grid-container {
+  display: flex;
+  justify-content: center;
+}
+
+.home-page__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 200px);
+  gap: 40px;
+  padding-bottom: 40px;
+}

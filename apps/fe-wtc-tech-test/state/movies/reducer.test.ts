@@ -1,8 +1,9 @@
 import { IAction } from '../types';
 import { moviesReducer, ActionTypes, initialState } from './index';
-import { IMovie } from './types';
+import { getMovieRating, toMovieCard } from './reducer';
+import { IError, IMovie, IMovieCard, IMovieRating } from './types';
 
-const mockMovie = () => ({
+const mockMovie: () => IMovie = () => ({
   Title: 'Blade Runner',
   Year: '1982',
   Rated: 'R',
@@ -51,11 +52,14 @@ describe('MoviesReducer', () => {
 
       const newState = moviesReducer(state, action);
 
+      const expectedMovies = action.data.map((movie) => toMovieCard(movie));
       const expectedMoviesById = {};
-      action.data.map((movie) => (expectedMoviesById[movie.imdbID] = movie));
+      action.data.map(
+        (movie) => (expectedMoviesById[movie.imdbID] = toMovieCard(movie))
+      );
 
       expect(newState).not.toBe(state);
-      expect(newState.movies).toEqual(action.data);
+      expect(newState.movies).toEqual(expectedMovies);
       expect(newState.moviesById).toEqual(expectedMoviesById);
     });
 
@@ -69,7 +73,7 @@ describe('MoviesReducer', () => {
 
       const newState = moviesReducer(state, action);
 
-      const newData = mockMovie();
+      const newData = toMovieCard(mockMovie());
 
       const mutateMovies = () => {
         newState.movies.push(newData);
@@ -82,5 +86,133 @@ describe('MoviesReducer', () => {
       expect(mutateMovies).toThrowError();
       expect(mutateMoviesById).toThrowError();
     });
+  });
+
+  describe(`${ActionTypes.ERROR}`, () => {
+    it('updates state correctly', () => {
+      const data: IError = { message: 'test error', code: 404 };
+
+      const state = { ...initialState };
+      const action: IAction<IError> = {
+        type: ActionTypes.ERROR,
+        data,
+      };
+
+      const newState = moviesReducer(state, action);
+
+      expect(newState).not.toBe(state);
+      expect(newState.error).toEqual(action.data);
+    });
+
+    it('new state is immutable', () => {
+      const data: IError = { message: 'test error', code: 404 };
+      const state = { ...initialState };
+      const action: IAction<IError> = {
+        type: ActionTypes.ERROR,
+        data,
+      };
+
+      const newState = moviesReducer(state, action);
+
+      const mutateError = () => {
+        newState.error.message = 'new message';
+      };
+
+      expect(mutateError).toThrowError();
+    });
+  });
+});
+
+describe('fn() getMovieRating', () => {
+  it('returns a valid rating between 0 and 5', () => {
+    const ratings: IMovieRating[] = [
+      { Source: 'Internet Movie Database', Value: '8.1/10' },
+      { Source: 'Rotten Tomatoes', Value: '90%' },
+      { Source: 'Metacritic', Value: '84/100' },
+    ];
+
+    const fullRatings: IMovieRating[] = [
+      { Source: 'Internet Movie Database', Value: '10/10' },
+      { Source: 'Rotten Tomatoes', Value: '100%' },
+      { Source: 'Metacritic', Value: '100/100' },
+    ];
+
+    const noRatings: IMovieRating[] = [
+      { Source: 'Internet Movie Database', Value: '0/10' },
+      { Source: 'Rotten Tomatoes', Value: '0%' },
+      { Source: 'Metacritic', Value: '0/100' },
+    ];
+
+    expect(getMovieRating(ratings)).toEqual(4.25);
+    expect(getMovieRating(fullRatings)).toEqual(5);
+    expect(getMovieRating(noRatings)).toEqual(0);
+  });
+
+  it('returns -1 if any of the ratings values are unrecognised', () => {
+    const unknownRating: IMovieRating[] = [
+      { Source: 'Internet Movie Database', Value: '0-10' },
+    ];
+
+    expect(getMovieRating(unknownRating)).toEqual(-1);
+  });
+
+  it('returns -1 if ratings array is empty', () => {
+    expect(getMovieRating([])).toEqual(-1);
+  });
+
+  it('returns 5 if ratings are higher than 5', () => {
+    const edgeCaseRatings: IMovieRating[] = [
+      { Source: 'Internet Movie Database', Value: '200/10' },
+    ];
+
+    const edgeCaseRatings2: IMovieRating[] = [
+      { Source: 'Internet Movie Database', Value: '12/10' },
+      { Source: 'Rotten Tomatoes', Value: '1000%' },
+      { Source: 'Metacritic', Value: '150/100' },
+    ];
+
+    expect(getMovieRating(edgeCaseRatings)).toEqual(5);
+    expect(getMovieRating(edgeCaseRatings2)).toEqual(5);
+  });
+});
+
+describe('fn() toMovieCard', () => {
+  it('converts IMovie to IMovieCard correctly', () => {
+    const expected: IMovieCard = {
+      Title: 'Blade Runner',
+      Poster:
+        'https://m.media-amazon.com/images/M/MV5BNzQzMzJhZTEtOWM4NS00MTdhLTg0YjgtMjM4MDRkZjUwZDBlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
+      Rating: 4.25,
+      imdbID: 'tt0083658',
+      Watched: true,
+      Saved: false,
+    };
+
+    expect(toMovieCard(mockMovie())).toEqual(expected);
+  });
+
+  it('adds new ratings property', () => {
+    const movieCard = toMovieCard(mockMovie());
+
+    expect(movieCard.Rating).toBe(4.25);
+  });
+
+  it('converts "watched" property to boolean', () => {
+    const movieCard = toMovieCard(mockMovie());
+
+    expect(movieCard.Watched).toBe(true);
+  });
+
+  it('converts "saved" property to boolean', () => {
+    const movieCard = toMovieCard(mockMovie());
+
+    expect(movieCard.Saved).toBe(false);
+  });
+
+  it('pure function returns new object', () => {
+    const movie = mockMovie();
+    const movieCard = toMovieCard(movie);
+
+    expect(movie).not.toBe(movieCard);
   });
 });
