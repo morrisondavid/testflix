@@ -26,7 +26,7 @@ const options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'Wunderman Thompson Commerce movies API',
+      title: 'Movies API',
       version: '1.0.0',
     },
     servers: [

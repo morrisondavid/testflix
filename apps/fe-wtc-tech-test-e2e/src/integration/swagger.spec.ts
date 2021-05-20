@@ -63,7 +63,7 @@ describe('fe-wtc-tech-test', () => {
 
   it('should go to /swagger when click on button', () => {
     cy.get('a').contains('Swagger').click();
-    cy.contains('Wunderman Thompson Commerce movies API').should('be.visible');
+    cy.contains('Movies API').should('be.visible');
     testGetEndpoint({
       routeIdentifier: 'Get list of all actors',
       contentNotEqualTo: '{}',
